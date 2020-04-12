@@ -30,3 +30,5 @@ urlpatterns = [
     path('check-auth/', views.Auth, name='check-auth'),
     path('logout/', views.sso_logout, name='sso_logout')
 ]
+
+# test
