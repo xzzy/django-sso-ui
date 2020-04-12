@@ -31,7 +31,7 @@ class HomePage(TemplateView):
         #       return HttpResponseRedirect(reverse('first_login_info_steps', args=(self.request.user.id,1)))
         template = get_template(self.template_name)
         #context = RequestContext(self.request)
-
+        context['request'] = self.request
         context['csrf_token_value'] = get_token(self.request)
         context['sso_auth_session_id'] = self.request.COOKIES.get('sso_auth_session_id','')
         context['referer'] = self.request.GET.get('referer',None)
@@ -92,13 +92,53 @@ def Auth(request):
 
      if request.user.is_authenticated: 
          response = HttpResponse('Authenticated', content_type='text/plain', status=200)
+        
          response['X-TestUser'] = 'jason@austwa.comiii'
+         response['X-REMOTEUSER'] = request.user.email 
+         response['X-LASTNAME'] = request.user.last_name
+         response['X-FIRSTNAME'] = request.user.first_name
+         response['X-EMAIL'] = request.user.email 
+
          if get_session:
                response.set_cookie('sso_auth_session_id', get_session )
                response = HttpResponseRedirect(referer)
      else:
          response = HttpResponse('Unable to find valid session', content_type='text/plain', status=403)
      return response
+
+
+from django.contrib.auth import logout
+
+def sso_logout(request):
+    your_data = request.session.get('your_key', None)
+    current_expiry = request.session.get('_session_expiry')
+    logout(request)
+    if your_data:
+        request.session[settings.SESSION_COOKIE_NAME] = your_data
+        if current_expiry:
+           request.session['_session_expiry'] = current_expiry
+    response = HttpResponse('<script>window.location="/";</script>', content_type='text/html', status=200)
+    return response
+
+def logout_old(request):
+    """
+    Removes the authenticated user's ID from the request and flushes their
+    session data.
+    """
+    # Dispatch the signal before the user is logged out so the receivers have a
+    # chance to find out *who* logged out.
+    user = getattr(request, 'user', None)
+    if hasattr(user, 'is_authenticated') and not user.is_authenticated():
+        user = None
+    user_logged_out.send(sender=user.__class__, request=request, user=user)
+
+    request.session.flush()
+    if hasattr(request, 'user'):
+        from django.contrib.auth.models import AnonymousUser
+        request.user = AnonymousUser()
+
+
+
 
      #session_id = None
      #if get_session:
@@ -118,3 +158,5 @@ def Auth(request):
 #         response = HttpResponse('Unable to find valid session', content_type='text/plain', status=403)
 #     return response
 #
+
+

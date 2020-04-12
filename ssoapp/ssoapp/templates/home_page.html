@@ -1,6 +1,4 @@
-
-
-
+{% if request.user.is_authenticated %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -47,7 +45,7 @@
                             {% endif %}
 	            </div>
                     <div class='col-xs-3 col-md-3'>
-			    <a class="btn btn-lg btn-primary btn-block" href="/logout">Logout</a>
+			    <a class="btn btn-lg btn-primary btn-block" href="/auth/logout/">Logout</a>
 		    </div>
               </div>
       </div>
@@ -61,6 +59,9 @@
 
   </body>
 </html>
-
-
-
+{% else %}
+	<script>
+            window.location="/accounts/login/";
+	</script>
+iii
+{% endif %}
