@@ -26,7 +26,7 @@ SECRET_KEY = 'id$7lp@s!6k*3!=rg8=^_a9%0&uax(9u6+qboijlv21u%!nthi'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False 
-
+DEFAULT_FROM_EMAIL='jason@austwa.com'
 ALLOWED_HOSTS = ['203.29.240.205','203.29.240.205:2222','loginauth.digitalreach.com.au','www.loginauth.digitalreach.com.au','test1.digitalreach.com.au','www.test1.digitalreach.com.au','127.0.0.1:9002','127.0.0.1']
 
 SESSION_COOKIE_NAME = 'sso_auth_session_id'

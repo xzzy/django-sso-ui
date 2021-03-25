@@ -71,19 +71,26 @@ def CheckAuth(request):
          response = HttpResponse('Unable to find valid session', content_type='text/plain', status=403)
      return response
 
+from django.views.decorators.csrf import csrf_exempt
 
 # Session Verification
+@csrf_exempt
 def Auth(request):
+     print ("TRYING")
+     print (request.META)
+
      text = request.COOKIES.get('session','')
      cookie_session = request.COOKIES.get('sso_auth_session_id','')
      get_session = request.GET.get('sso_auth_session_id',None)
      referer = request.GET.get('referer','')
 
      session_id = None
+     print (loader.render_to_string( 'cookie_session.html', {'title': "TEWST", 'cal': "CAL:"}))
      if get_session:
            session_id = get_session
-           response = HttpResponse('session cookie saved<script>window.location.href="'+referer+'";</script>', content_type='text/html', status=200)
-           response.set_cookie('sso_auth_session_id', get_session )
+           cs = loader.render_to_string( 'cookie_session.html', {'referer': referer})
+           response = HttpResponse(cs, content_type='text/html', status=200)
+           response.set_cookie('sso_auth_session_id', get_session ) 
 
            #response = HttpResponseRedirect(referer)
            return response
@@ -102,8 +109,11 @@ def Auth(request):
          if get_session:
                response.set_cookie('sso_auth_session_id', get_session )
                response = HttpResponseRedirect(referer)
+         
      else:
          response = HttpResponse('Unable to find valid session', content_type='text/plain', status=403)
+     print (response)
+     print ("5")
      return response
 
 
